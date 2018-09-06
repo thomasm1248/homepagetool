@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Home</title>
+	<style>
+
+/* Website hotkeys */
+#link {
+	display: block;
+	text-align: center;
+}
+
+#link-list {
+	padding: 10px;
+}
+
+.link-label {
+	float: left;
+	width: 30px;
+	margin: 10px 0 0 30px;
+	font-family: Arial;
+	font-size: 20px;
+}
+
+.link {
+	white-space: nowrap;
+	width: 80%;
+	margin: 10px 0 0 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-family: Arial;
+	font-size: 20px;
+}
+
+/* Saver CSS */
+#text {
+	width: 100%;
+	height: 580px;
+	outline: none;
+	resize: none;
+	border: 1px solid black;
+	border-radius: 5px;
+	font-family: "Arial";
+	font-size: 15px;
+	margin: 20px ;
+	line-height: 20px;
+	padding: 5px;
+}
+
+/* ToDo CSS */
+#list p {
+	margin: 10px 10px;
+	padding-left: 20px;
+}
+
+#list div {
+	margin-left: 45px;
+	font-family: Arial;
+	font-size: 14px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	padding-left: 5px;
+	width: 70%;
+	display: block;
+}
+
+#list #focus {
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+	border-right: 200px solid transparent;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+.tag {
+	background-color: lightgrey;
+	margin-left: 5px;
+	padding: 2px 5px;
+}
+
+.todo {
+	border-left: 20px solid lightgray;
+}
+
+.done {
+	border-left: 20px solid #7cff96;
+}
+
+/* Whole page CSS */
+* {
+	margin: 0;
+	padding:0;
+}
+
+#page-container {
+	margin: 0;
+	padding: 0;
+	/*border: 1px solid purple;*/
+}
+
+#left {
+	width: 49%;
+	/*border: 1px solid red;*/
+	display: block;
+	float: left;
+}
+
+#right {
+	width: 49%;
+	/*border: 1px solid blue;*/
+	display: block;
+	float: right;
+}
+
+#bottom {
+	width: 49%;
+	/*border: 1px solid green;*/
+	display: block;
+	float: left;
+}
+
+	</style>
+</head>
+<body>
+	<a id="link" href="" target="_blank"></a>
+	<div id="page-container">
+		<div id="left">
+			<div id="list">
+			</div>
+		</div>
+		<div id="right">
+			<div id="link-list">
+			</div>
+		</div>
+		<div id="bottom">
+			<div id="saver">
+				<textarea id="text"></textarea>
+			</div>
+		</div>
+	</div>
+	<script>
+
+
+
+															// Shared globals
+var storage = window.localStorage;
+function l(id) {
+	return document.getElementById(id);
+}
+
+
+
+															// ToDo globals
+function make(tag) {
+	return document.createElement(tag);
+}
+
+function newItem(text, date) {
+	return {
+		date: date,
+		state: "todo",
+		tags: [],
+		text: text
+	};
+}
+
+var NoDate = function(){};
+NoDate.prototype.toDateString = function() {
+	return "No Due Date";
+};
+NoDate.prototype.toString = function() {
+	return "No Due Date";
+};
+
+var current = {};
+var list = [];
+var tagColors = {};
+var storage = window.localStorage;
+
+// Load any data
+var load = storage.getItem("tasks");
+if(load !== null) {
+	var data = JSON.parse(load);
+	
+	var item;
+	var date;
+	for(var i in data) {
+		date = data[i].d;
+		item = newItem(data[i].t, date === "No Due Date" ? new NoDate() : new Date(date));
+		item.state = data[i].s;
+		if(data[i].ta) {
+			item.tags = data[i].ta;
+		}
+		list.push(item);
+	}
+	
+	// Load tag colors
+	tagColors = JSON.parse(storage.getItem("tagColors"));
+}
+
+function storeData() {
+	var data = [];
+	var item;
+	for(var i in list) {
+		item = {
+			d: list[i].date.toString(),
+			s: list[i].state,
+			ta: list[i].tags,
+			t: list[i].text
+		};
+		data.push(item);
+	}
+	storage.setItem("tasks", JSON.stringify(data));
+	storage.setItem("tagColors", JSON.stringify(tagColors));
+}
+
+var monthNames = {
+	jan: 0,
+	feb: 1,
+	mar: 2,
+	apr: 3,
+	may: 4,
+	jun: 5,
+	jul: 6,
+	aug: 7,
+	sep: 8,
+	oct: 9,
+	nov: 10,
+	dec: 11
+};
+
+function renderPage() {
+	// An object to store new HTML in
+	var newList = make("div");
+	
+	// Make a list item for every task
+	var dateH = "";
+	for(var i in list) {
+		// Make a header for each date
+		var date = list[i].date.toDateString();
+		if(date !== dateH) {
+			dateH = date;
+			var header = make("p");
+			header.innerHTML = dateH;
+			newList.appendChild(header);
+		}
+		
+		// Make a new item
+		var item = make("div");
+		item.className = "item";
+		item.innerHTML = list[i].text;
+		item.className = list[i].state;
+		if(list[i] === current) { // Highlight if focused
+			item.id = "focus";
+		}
+		
+		// Add tags
+		var tag;
+		var tagName;
+		for(var j in list[i].tags) {
+			tagName = list[i].tags[j];
+			tag = make("span");
+			tag.className = "tag";
+			tag.innerHTML = tagName;
+			if(tagColors[tagName] !== "") {
+				tag.style.backgroundColor = tagColors[tagName];
+			}
+				
+			item.appendChild(tag);
+		}
+		
+		// Add the item
+		newList.appendChild(item);
+	}
+	
+	// Replace current HTML with new HTML
+	l("list").innerHTML = newList.innerHTML;
+}
+renderPage();
+
+function getDate() {
+	var input = prompt("Due");
+	var date = new Date();
+	input += "";
+	switch(input.length) {
+		case 0:
+			date = "cancel";
+      break;
+		case 1:
+			if(input === " ") {
+				return new NoDate();
+			}
+			date.setDate(date.getDate() + 1*input);
+			break;
+		case 2:
+			var th = input * 1;
+			date.setDate(th);
+			if(date < (new Date())) {
+				date.setMonth(date.getMonth() + 1);
+			}
+			break;
+		case 3:
+			var month = input.slice(0, 1) * 1 - 1;
+			var day = input.slice(1) * 1;
+			date.setMonth(month);
+			date.setDate(day);
+			if(date < (new Date())) {
+				date.setFullYear(date.getFullYear() + 1);
+			}
+			break;
+		case 4:
+			var month = input.slice(0, 2) * 1 - 1;
+			var day = input.slice(2) * 1;
+			date.setMonth(month);
+			date.setDate(day);
+			if(date < (new Date())) {
+				date.setFullYear(date.getFullYear() + 1);
+			}
+			break;
+		case 5:
+			var monthName = monthNames[input.slice(0, 3)];
+			var nth = input.slice(3) * 1;
+			date.setMonth(monthName);
+			date.setDate(nth);
+			if(date < (new Date())) {
+				date.setFullYear(date.getFullYear() + 1);
+			}
+			break;
+	}
+	return date;
+}
+
+function compareDates(a, b) {
+	// Return true if in wrong order
+	
+	var as = a.toDateString();
+	var bs = b.toDateString();
+	var blank = "No Due Date";
+	if(as === blank && bs !== blank) {
+		return true;
+	}
+	
+	if(a > b) {
+		return true;
+	}
+	
+	return false;
+}
+
+function sortDates() {
+	var changed;
+	do {
+		changed = false;
+		for(var i = 0; i < list.length - 1; i++) {
+			if(compareDates(list[i].date, list[i+1].date)) {
+				var temp = list[i];
+				list[i] = list[i+1];
+				list[i+1] = temp;
+				changed = true;
+				break;
+			}
+		}
+	} while(changed);
+}
+
+function createTask() {
+	var text = prompt("Task");
+	if(text !== "") {
+		var date = getDate();
+		if (date === "cancel") {
+			date = new NoDate();
+		}
+		return newItem(text, date);
+	} else {
+		return "cancel";
+	}
+}
+
+
+
+															// Saver globals
+var text = document.getElementById("text");
+
+
+
+															// Hotkeys globals
+var link = document.getElementById("link"); // link element on page
+var linkListDiv = document.getElementById("link-list"); // link list element
+var keys = {}; // Object to store URLs and respective keycodes
+
+// Check for saved data
+var load = storage.getItem("url-data");
+if(load !== null) keys = JSON.parse(load);
+
+// Update page to reflect current list of keybinds
+function updatePage() {
+	var newText = "";
+	
+	// Generate HTML
+	for(var i in keys) {
+		if(keys[i] !== "" && keys[i] !== null) {
+			newText += "<p class=\"link-label\">" + String.fromCharCode(i) + "</p><p class=\"link\">" + (new Option(JSON.stringify(keys[i]))).innerHTML.slice(1, -1) + "</p>";
+		}
+	}
+	
+	// Display HTML
+	linkListDiv.innerHTML = newText;
+}
+
+updatePage();
+
+
+
+															// Event listener
+var pageState = "editing tasks";
+window.addEventListener("keydown", function(e) {
+	if(document.activeElement === l("text")) {
+		if(!e.ctrlKey) return;
+		switch(e.keyCode) {
+			case 83:
+				var saveName = prompt("Save As");
+				if(saveName !== "") {
+					storage.setItem(saveName, text.value);
+				}
+				e.preventDefault();
+				break;
+			case 79:
+				var saveName = prompt("Open");
+				if(saveName !== "") {
+					text.value = storage.getItem(saveName);
+				}
+				e.preventDefault();
+				break;
+			case 68:
+				var saveName = prompt("Delete Save");
+				if(saveName !== "") {
+					storage.setItem(saveName, "");
+				}
+				e.preventDefault();
+				break;
+		}
+		return;
+	}
+	
+	if(pageState === "editing tasks") {
+		var iOf = list.indexOf(current);
+		switch(e.keyCode) {
+			case 78:
+				var task = createTask();
+				if(task !== "cancel") {
+					list.push(task);
+					current = task;
+				}
+				break;
+			case 69:
+				var newText = prompt("");
+				if(newText !== "") {
+					current.text = newText;
+				}
+				break;
+			case 74:
+				current = list[iOf + 1 >= list.length ? iOf : iOf + 1];
+				break;
+			case 75:
+				current = list[iOf - 1 < 0 ? iOf : iOf - 1];
+				break;
+			case 85:
+				current.date.setDate(
+					current.date.getDate() + 1
+				);
+				break;
+			case 73:
+				current.date.setDate(
+					current.date.getDate() + -1
+				);
+				break;
+			case 68:
+				list.splice(iOf, 1);
+				if(iOf >= list.length) {
+					iOf--;
+				}
+				current = list[iOf];
+				break;
+			case 88:
+				if(current.state === "todo") {
+					current.state = "done";
+				} else {
+					current.state = "todo";
+				}
+				break;
+			case 83:
+				var date = getDate();
+				if(date !== "cancel") {
+					current.date = date;
+				}
+				break;
+			case 84:
+				var tag = prompt("Tag");
+				if(tag !== "") {
+					var index = current.tags.indexOf(tag);
+					if(index >= 0) {
+						current.tags.splice(index, 1);
+					} else {
+						current.tags.push(tag);
+					}
+				}
+				break;
+			case 67:
+				var tagName = prompt("Tag");
+				var color = prompt("Color");
+				tagColors[tagName] = color;
+				break;
+			case 32:
+				pageState = "ready for hotkey";
+				e.preventDefault();
+				break;
+		}
+		sortDates();
+		storeData();
+		renderPage();
+	} else if(pageState === "ready for hotkey") {
+		// Don't allow ALT and CTRL
+		if(e.keyCode === 16 || e.keyCode === 17) return;
+
+		// If SHIFT, edit key bind
+		if(e.shiftKey) {
+			var url = prompt("URL:");
+			if(url !== null) {
+				keys["" + e.keyCode] = url;
+				storage.setItem("url-data", JSON.stringify(keys));
+				updatePage();
+				pageState = "editing tasks";
+			}
+		}
+
+		// If no SHIFT, set link URL to the pressed key's URL
+		else if(e.keyCode !== 13/*ENTER key*/) {
+			link.href = keys["" + e.keyCode];
+			// Place focus on link. Pressing ENTER will open link
+			link.focus();
+			pageState = "editing tasks";
+		}
+	}
+}, false);
+
+
+	</script>
+</body>
+</html>
