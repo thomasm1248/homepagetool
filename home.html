@@ -381,6 +381,10 @@ function createTask() {
 
 															// Saver globals
 var text = document.getElementById("text");
+var currentSaveName = "";
+var notes = {};
+load = storage.getItem("notes");
+if(load !== null) notes = JSON.parse(load);
 
 
 
@@ -390,7 +394,7 @@ var linkListDiv = document.getElementById("link-list"); // link list element
 var keys = {}; // Object to store URLs and respective keycodes
 
 // Check for saved data
-var load = storage.getItem("url-data");
+load = storage.getItem("url-data");
 if(load !== null) keys = JSON.parse(load);
 
 // Update page to reflect current list of keybinds
@@ -419,24 +423,44 @@ window.addEventListener("keydown", function(e) {
 		if(!e.ctrlKey) return;
 		switch(e.keyCode) {
 			case 83:
-				var saveName = prompt("Save As");
-				if(saveName !== "") {
-					storage.setItem(saveName, text.value);
+				if(currentSaveName === "") {
+					var saveName = prompt("Save As");
+					if(saveName !== "") {
+						notes[saveName] = text.value;
+					}
+				} else if(currentSaveName === "notes") {
+					var list = text.value.split("\n");
+					var newNotes = {};
+					for(var i in list) {
+						newNotes[i] = notes[i];
+					}
+					notes = newNotes;
+				} else {
+					notes[currentSaveName] = text.value;
 				}
+				storage.setItem("notes", JSON.stringify(notes));
 				e.preventDefault();
 				break;
 			case 79:
 				var saveName = prompt("Open");
-				if(saveName !== "") {
-					text.value = storage.getItem(saveName);
+				if(saveName === "data") {
+					text.value = "";
+					for(var i in notes) {
+						if(!i) text.value += "\n";
+						text.value += i;
+					}
+				} else {
+					text.value = notes[saveName];
 				}
+				currentSaveName = saveName;
 				e.preventDefault();
 				break;
-			case 68:
-				var saveName = prompt("Delete Save");
+			case 65:
+				var saveName = prompt("Save As");
 				if(saveName !== "") {
-					storage.setItem(saveName, "");
+					notes[saveName] = text.value;
 				}
+				storage.setItem("notes", JSON.stringify(notes));
 				e.preventDefault();
 				break;
 		}
