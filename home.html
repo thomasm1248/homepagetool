@@ -396,10 +396,10 @@ window.addEventListener("keydown", function(e) {
 				break;
 			case 79:
 				var saveName = prompt("Open");
-				if(saveName === "data") {
+				if(saveName === "notes") {
 					text.value = "";
 					for(var i in notes) {
-						if(!i) text.value += "\n";
+						if(i) text.value += "\n";
 						text.value += i;
 					}
 				} else {
