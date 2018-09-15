@@ -4,17 +4,14 @@
   <meta charset="utf-8">
   <title>Home</title>
 	<style>
-
 /* Website hotkeys */
 #link {
 	display: block;
 	text-align: center;
 }
-
 #link-list {
 	padding: 10px;
 }
-
 .link-label {
 	float: left;
 	width: 30px;
@@ -22,7 +19,6 @@
 	font-family: Arial;
 	font-size: 20px;
 }
-
 .link {
 	white-space: nowrap;
 	width: 80%;
@@ -32,7 +28,6 @@
 	font-family: Arial;
 	font-size: 20px;
 }
-
 /* Saver CSS */
 #text {
 	width: 100%;
@@ -47,13 +42,11 @@
 	line-height: 20px;
 	padding: 5px;
 }
-
 /* ToDo CSS */
 #list p {
 	margin: 10px 10px;
 	padding-left: 20px;
 }
-
 #list div {
 	margin-left: 45px;
 	font-family: Arial;
@@ -64,7 +57,6 @@
 	width: 70%;
 	display: block;
 }
-
 #list #focus {
 	border-top: 1px solid black;
 	border-bottom: 1px solid black;
@@ -72,54 +64,45 @@
 	padding-top: 2px;
 	padding-bottom: 2px;
 }
-
 .tag {
 	background-color: lightgrey;
 	margin-left: 5px;
 	padding: 2px 5px;
 }
-
 .todo {
 	border-left: 20px solid lightgray;
 }
-
 .done {
 	border-left: 20px solid #7cff96;
 }
-
 /* Whole page CSS */
 * {
 	margin: 0;
 	padding:0;
 }
-
 #page-container {
 	margin: 0;
 	padding: 0;
 	/*border: 1px solid purple;*/
 }
-
 #left {
 	width: 49%;
 	/*border: 1px solid red;*/
 	display: block;
 	float: left;
 }
-
 #right {
 	width: 49%;
 	/*border: 1px solid blue;*/
 	display: block;
 	float: right;
 }
-
 #bottom {
 	width: 49%;
 	/*border: 1px solid green;*/
 	display: block;
 	float: left;
 }
-
 	</style>
 </head>
 <body>
@@ -140,22 +123,15 @@
 		</div>
 	</div>
 	<script>
-
-
-
 															// Shared globals
 var storage = window.localStorage;
 function l(id) {
 	return document.getElementById(id);
 }
-
-
-
 															// ToDo globals
 function make(tag) {
 	return document.createElement(tag);
 }
-
 function newItem(text, date) {
 	return {
 		date: date,
@@ -164,7 +140,6 @@ function newItem(text, date) {
 		text: text
 	};
 }
-
 var NoDate = function(){};
 NoDate.prototype.toDateString = function() {
 	return "No Due Date";
@@ -172,12 +147,9 @@ NoDate.prototype.toDateString = function() {
 NoDate.prototype.toString = function() {
 	return "No Due Date";
 };
-
 var current = {};
 var list = [];
 var tagColors = {};
-var storage = window.localStorage;
-
 // Load any data
 var load = storage.getItem("tasks");
 if(load !== null) {
@@ -198,7 +170,6 @@ if(load !== null) {
 	// Load tag colors
 	tagColors = JSON.parse(storage.getItem("tagColors"));
 }
-
 function storeData() {
 	var data = [];
 	var item;
@@ -214,7 +185,6 @@ function storeData() {
 	storage.setItem("tasks", JSON.stringify(data));
 	storage.setItem("tagColors", JSON.stringify(tagColors));
 }
-
 var monthNames = {
 	jan: 0,
 	feb: 1,
@@ -229,7 +199,6 @@ var monthNames = {
 	nov: 10,
 	dec: 11
 };
-
 function renderPage() {
 	// An object to store new HTML in
 	var newList = make("div");
@@ -278,7 +247,6 @@ function renderPage() {
 	l("list").innerHTML = newList.innerHTML;
 }
 renderPage();
-
 function getDate() {
 	var input = prompt("Due");
 	var date = new Date();
@@ -330,7 +298,6 @@ function getDate() {
 	}
 	return date;
 }
-
 function compareDates(a, b) {
 	// Return true if in wrong order
 	
@@ -347,7 +314,6 @@ function compareDates(a, b) {
 	
 	return false;
 }
-
 function sortDates() {
 	var changed;
 	do {
@@ -363,7 +329,6 @@ function sortDates() {
 		}
 	} while(changed);
 }
-
 function createTask() {
 	var text = prompt("Task");
 	if(text !== "") {
@@ -376,27 +341,19 @@ function createTask() {
 		return "cancel";
 	}
 }
-
-
-
 															// Saver globals
 var text = document.getElementById("text");
 var currentSaveName = "";
 var notes = {};
 load = storage.getItem("notes");
 if(load !== null) notes = JSON.parse(load);
-
-
-
 															// Hotkeys globals
 var link = document.getElementById("link"); // link element on page
 var linkListDiv = document.getElementById("link-list"); // link list element
 var keys = {}; // Object to store URLs and respective keycodes
-
 // Check for saved data
 load = storage.getItem("url-data");
 if(load !== null) keys = JSON.parse(load);
-
 // Update page to reflect current list of keybinds
 function updatePage() {
 	var newText = "";
@@ -411,11 +368,7 @@ function updatePage() {
 	// Display HTML
 	linkListDiv.innerHTML = newText;
 }
-
 updatePage();
-
-
-
 															// Event listener
 var pageState = "editing tasks";
 window.addEventListener("keydown", function(e) {
@@ -429,9 +382,9 @@ window.addEventListener("keydown", function(e) {
 						notes[saveName] = text.value;
 					}
 				} else if(currentSaveName === "notes") {
-					var list = text.value.split("\n");
+					var notesList = text.value.split("\n");
 					var newNotes = {};
-					for(var i in list) {
+					for(var i in notesList) {
 						newNotes[i] = notes[i];
 					}
 					notes = newNotes;
@@ -550,7 +503,6 @@ window.addEventListener("keydown", function(e) {
 	} else if(pageState === "ready for hotkey") {
 		// Don't allow ALT and CTRL
 		if(e.keyCode === 16 || e.keyCode === 17) return;
-
 		// If SHIFT, edit key bind
 		if(e.shiftKey) {
 			var url = prompt("URL:");
@@ -561,7 +513,6 @@ window.addEventListener("keydown", function(e) {
 				pageState = "editing tasks";
 			}
 		}
-
 		// If no SHIFT, set link URL to the pressed key's URL
 		else if(e.keyCode !== 13/*ENTER key*/) {
 			link.href = keys["" + e.keyCode];
@@ -571,8 +522,6 @@ window.addEventListener("keydown", function(e) {
 		}
 	}
 }, false);
-
-
 	</script>
 </body>
 </html>
