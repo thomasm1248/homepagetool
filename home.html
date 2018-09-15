@@ -450,7 +450,11 @@ window.addEventListener("keydown", function(e) {
 						text.value += i;
 					}
 				} else {
-					text.value = notes[saveName];
+					if(notes[saveName] === undefined) {
+						text.value = "";
+					} else {
+						text.value = notes[saveName];
+					}
 				}
 				currentSaveName = saveName;
 				e.preventDefault();
