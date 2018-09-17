@@ -380,12 +380,13 @@ window.addEventListener("keydown", function(e) {
 					var saveName = prompt("Save As");
 					if(saveName !== "") {
 						notes[saveName] = text.value;
+						currentSaveName = saveName;
 					}
 				} else if(currentSaveName === "notes") {
 					var notesList = text.value.split("\n");
 					var newNotes = {};
 					for(var i in notesList) {
-						newNotes[i] = notes[i];
+						newNotes[noteList[i]] = notes[noteList[i]];
 					}
 					notes = newNotes;
 				} else {
