@@ -343,6 +343,8 @@ function createTask() {
 }
 															// Saver globals
 var text = document.getElementById("text");
+text.onmouseover = function() { document.body.style.overflow = "hidden"; };
+text.onmouseout = function() { document.body.style.overflow = "auto"; };
 var currentSaveName = "";
 var notes = {};
 load = storage.getItem("notes");
