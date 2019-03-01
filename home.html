@@ -263,10 +263,25 @@ function getDate() {
 			date.setDate(date.getDate() + 1*input);
 			break;
 		case 2:
-			var th = input * 1;
-			date.setDate(th);
-			if(date < (new Date())) {
-				date.setMonth(date.getMonth() + 1);
+			if(input * 1) {
+				var th = input * 1;
+				date.setDate(th);
+				if(date < (new Date())) {
+					date.setMonth(date.getMonth() + 1);
+				}
+			} else {
+				var days = {
+					"su": 0,
+					"mo": 1,
+					"tu": 2,
+					"we": 3,
+					"th": 4,
+					"fr": 5,
+					"sa": 6
+				};
+				var dayToSet = days[input];
+				var dist = (dayToSet + 7 - date.getDay()) % 7;
+				date.setDate(date.getDate() + dist);
 			}
 			break;
 		case 3:
