@@ -439,6 +439,16 @@ window.addEventListener("keydown", function(e) {
 				storage.setItem("notes", JSON.stringify(notes));
 				e.preventDefault();
 				break;
+			case 68:
+				var deleteName = prompt("Delete");
+				if(deleteName !== "") {
+					if(notes[deleteName] !== undefined) {
+						delete notes[deleteName];
+						storage.setItem("notes", JSON.stringify(notes));
+					}
+				}
+				e.preventDefault();
+				break;
 		}
 		return;
 	}
