@@ -551,6 +551,15 @@ window.addEventListener("keydown", function(e) {
 		}
 	}
 }, false);
+
+// Get a quote :)
+fetch("https://gist.githubusercontent.com/signed0/d70780518341e1396e11/raw/2a7f4af8d181a714f9d49105ed57fafb3f450960/quotes.json").then(function(response) {
+    response.text().then(function(fileContents) {
+        var quotes = fileContents.split("\n");
+        var quote = JSON.parse(quotes[Math.floor(Math.random() * quotes.length)]);
+        document.getElementById("text").textContent = quote[0] + "\n\n    -" + quote[1];
+      });
+  });
 	</script>
 </body>
 </html>
