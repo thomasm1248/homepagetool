@@ -38,7 +38,6 @@
 	border-radius: 5px;
 	font-family: "Courier New", Courier, monospace;
 	font-size: 15px;
-	margin: 20px ;
 	line-height: 20px;
 	padding: 5px;
 }
@@ -91,18 +90,24 @@
 	/*border: 1px solid red;*/
 	display: block;
 	float: left;
+	background-color: blue;
+	margin-bottom: 20px;
 }
 #right {
 	width: 49%;
 	/*border: 1px solid blue;*/
 	display: block;
 	float: right;
+	background-color: red;
+	margin-bottom: 10px;
 }
 #bottom {
-	width: 49%;
+	width: 650px;
 	/*border: 1px solid green;*/
 	display: block;
-	float: left;
+	clear: both;
+	margin: 0 auto;
+	background-color: yellow;
 }
 	</style>
 </head>
@@ -551,7 +556,6 @@ window.addEventListener("keydown", function(e) {
 		}
 	}
 }, false);
-
 // Get a quote :)
 fetch("https://gist.githubusercontent.com/signed0/d70780518341e1396e11/raw/2a7f4af8d181a714f9d49105ed57fafb3f450960/quotes.json").then(function(response) {
     response.text().then(function(fileContents) {
