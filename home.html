@@ -420,9 +420,11 @@ window.addEventListener("keydown", function(e) {
 				var saveName = prompt("Open");
 				if(saveName === "notes") {
 					text.value = "";
+					var firstItem = true;
 					for(var i in notes) {
-						if(i) text.value += "\n";
-						text.value += i;
+						if(!firstItem) text.value += "\n";
+						firstItem = false;
+						text.value += i + " :: " + notes[i].split("\n")[0];
 					}
 				} else {
 					if(notes[saveName] === undefined) {
