@@ -438,7 +438,7 @@ window.addEventListener("keydown", function(e) {
 						firstItem = false;
 						var noteIndex = noteList[i];
 						while(noteIndex.length < greatestLength) noteIndex += " ";
-						text.value += noteIndex + " :: " + notes[i].split("\n")[0];
+						text.value += noteIndex + " :: " + notes[noteList[i]].split("\n")[0];
 					}
 				} else {
 					if(notes[saveName] === undefined) {
