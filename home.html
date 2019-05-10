@@ -429,14 +429,14 @@ window.addEventListener("keydown", function(e) {
 				if(saveName === "notes") {
 					var greatestLength = 0;
 					for(var i in noteList) {
-						if(i.length > greatestLength) greatestLength = i.length;
+						if(noteList[i].length > greatestLength) greatestLength = noteList[i].length;
 					}
 					text.value = "";
 					var firstItem = true;
 					for(i in noteList) {
 						if(!firstItem) text.value += "\n";
 						firstItem = false;
-						var noteIndex = i;
+						var noteIndex = noteList[i];
 						while(noteIndex.length < greatestLength) noteIndex += " ";
 						text.value += noteIndex + " :: " + notes[i].split("\n")[0];
 					}
