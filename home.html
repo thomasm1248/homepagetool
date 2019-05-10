@@ -367,6 +367,20 @@ var currentSaveName = "";
 var notes = {};
 load = storage.getItem("notes");
 if(load !== null) notes = JSON.parse(load);
+var noteList = [];
+load = storage.getItem("noteList");
+if(load !== null) noteList = JSON.parse(load);
+function updateNoteName(noteName) {
+	var index = noteList.indexOf(noteName);
+	if(index >= 0) noteList.splice(index, 1);
+	if(noteName) noteList.unshift(noteName);
+	storage.setItem("noteList", JSON.stringify(noteList));
+}
+function removeNoteName(noteName) {
+	var index = noteList.indexOf(noteName);
+	if(index >= 0) noteList.splice(index, 1);
+	storage.setItem("noteList", JSON.stringify(noteList));
+}
 															// Hotkeys globals
 var link = document.getElementById("link"); // link element on page
 var linkListDiv = document.getElementById("link-list"); // link list element
@@ -400,16 +414,11 @@ window.addEventListener("keydown", function(e) {
 					var saveName = prompt("Save As");
 					if(saveName !== "") {
 						notes[saveName] = text.value;
+						updateNoteName(saveName);
 						currentSaveName = saveName;
 					}
-				} else if(currentSaveName === "notes") {
-					var notesList = text.value.split("\n");
-					var newNotes = {};
-					for(var i in notesList) {
-						newNotes[noteList[i]] = notes[noteList[i]];
-					}
-					notes = newNotes;
 				} else {
+					updateNoteName(saveName);
 					notes[currentSaveName] = text.value;
 				}
 				storage.setItem("notes", JSON.stringify(notes));
@@ -419,12 +428,12 @@ window.addEventListener("keydown", function(e) {
 				var saveName = prompt("Open");
 				if(saveName === "notes") {
 					var greatestLength = 0;
-					for(var i in notes) {
+					for(var i in noteList) {
 						if(i.length > greatestLength) greatestLength = i.length;
 					}
 					text.value = "";
 					var firstItem = true;
-					for(i in notes) {
+					for(i in noteList) {
 						if(!firstItem) text.value += "\n";
 						firstItem = false;
 						var noteIndex = i;
@@ -444,6 +453,7 @@ window.addEventListener("keydown", function(e) {
 			case 65:
 				var saveName = prompt("Save As");
 				if(saveName !== "") {
+					updateNoteName(saveName);
 					notes[saveName] = text.value;
 				}
 				storage.setItem("notes", JSON.stringify(notes));
@@ -451,6 +461,7 @@ window.addEventListener("keydown", function(e) {
 				break;
 			case 68:
 				var deleteName = prompt("Delete");
+				removeNoteName(deleteName);
 				if(deleteName !== "") {
 					if(notes[deleteName] !== undefined) {
 						delete notes[deleteName];
