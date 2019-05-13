@@ -410,23 +410,31 @@ window.addEventListener("keydown", function(e) {
 		if(!e.ctrlKey) return;
 		switch(e.keyCode) {
 			case 83:
-				if(currentSaveName === "") {
+				if(currentSaveName === "data") {
+					var newData = JSON.parse(text.value);
+					for(i in newData) {
+						storage.setItem(i, newData[i]);
+					}
+				} if(currentSaveName === "") {
 					var saveName = prompt("Save As");
 					if(saveName !== "") {
 						notes[saveName] = text.value;
 						updateNoteName(saveName);
 						currentSaveName = saveName;
+						storage.setItem("notes", JSON.stringify(notes));
 					}
 				} else {
 					updateNoteName(currentSaveName);
 					notes[currentSaveName] = text.value;
+					storage.setItem("notes", JSON.stringify(notes));
 				}
-				storage.setItem("notes", JSON.stringify(notes));
 				e.preventDefault();
 				break;
 			case 79:
 				var saveName = prompt("Open");
-				if(saveName === "notes") {
+				if(saveName === "data") {
+					text.value = JSON.stringify(storage);
+				} if(saveName === "notes") {
 					var greatestLength = 0;
 					for(var i in noteList) {
 						if(noteList[i].length > greatestLength) greatestLength = noteList[i].length;
