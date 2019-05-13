@@ -418,7 +418,7 @@ window.addEventListener("keydown", function(e) {
 						currentSaveName = saveName;
 					}
 				} else {
-					updateNoteName(saveName);
+					updateNoteName(currentSaveName);
 					notes[currentSaveName] = text.value;
 				}
 				storage.setItem("notes", JSON.stringify(notes));
