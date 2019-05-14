@@ -211,6 +211,23 @@ function renderPage() {
 	for(var i in list) {
 		// Make a header for each date
 		var date = list[i].date.toDateString();
+		
+		// Add Today, Yesterday, and Tomorrow
+		var relDate = new Date();
+		if(date === relDate.toDateString()) { // Check for "Today"
+			date = "Today, " + date;
+		} else {
+			relDate.setDate(relDate.getDate() - 1); // Check for "Yesterday"
+			if(date === relDate.toDateString()) {
+				date = "Yesterday, " + date;
+			} else {
+				relDate.setDate(relDate.getDate() + 2); // Check for "Tomorrow"
+				if(date === relDate.toDateString()) {
+					date = "Tomorrow, " + date;
+				}
+			}
+		}
+		
 		if(date !== dateH) {
 			dateH = date;
 			var header = make("p");
