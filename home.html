@@ -415,7 +415,7 @@ window.addEventListener("keydown", function(e) {
 					for(i in newData) {
 						storage.setItem(i, newData[i]);
 					}
-				} if(currentSaveName === "") {
+				} else if(currentSaveName === "") {
 					var saveName = prompt("Save As");
 					if(saveName !== "") {
 						notes[saveName] = text.value;
@@ -434,7 +434,7 @@ window.addEventListener("keydown", function(e) {
 				var saveName = prompt("Open");
 				if(saveName === "data") {
 					text.value = JSON.stringify(storage);
-				} if(saveName === "notes") {
+				} else if(saveName === "notes") {
 					var greatestLength = 0;
 					for(var i in noteList) {
 						if(noteList[i].length > greatestLength) greatestLength = noteList[i].length;
