@@ -453,6 +453,7 @@ window.addEventListener("keydown", function(e) {
 						text.value = "";
 					} else {
 						text.value = notes[saveName];
+						updateNoteName(saveName);
 					}
 				}
 				currentSaveName = saveName;
