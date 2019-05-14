@@ -398,6 +398,21 @@ function removeNoteName(noteName) {
 	if(index >= 0) noteList.splice(index, 1);
 	storage.setItem("noteList", JSON.stringify(noteList));
 }
+function generateNotesPage() {
+	var greatestLength = 0;
+	for(var i in noteList) {
+		if(noteList[i].length > greatestLength) greatestLength = noteList[i].length;
+	}
+	text.value = "";
+	var firstItem = true;
+	for(i in noteList) {
+		if(!firstItem) text.value += "\n";
+		firstItem = false;
+		var noteIndex = noteList[i];
+		while(noteIndex.length < greatestLength) noteIndex += " ";
+		text.value += noteIndex + " :: " + notes[noteList[i]].split("\n")[0];
+	}
+}
 															// Hotkeys globals
 var link = document.getElementById("link"); // link element on page
 var linkListDiv = document.getElementById("link-list"); // link list element
@@ -452,19 +467,7 @@ window.addEventListener("keydown", function(e) {
 				if(saveName === "data") {
 					text.value = JSON.stringify(storage);
 				} else if(saveName === "notes") {
-					var greatestLength = 0;
-					for(var i in noteList) {
-						if(noteList[i].length > greatestLength) greatestLength = noteList[i].length;
-					}
-					text.value = "";
-					var firstItem = true;
-					for(i in noteList) {
-						if(!firstItem) text.value += "\n";
-						firstItem = false;
-						var noteIndex = noteList[i];
-						while(noteIndex.length < greatestLength) noteIndex += " ";
-						text.value += noteIndex + " :: " + notes[noteList[i]].split("\n")[0];
-					}
+					generateNotesPage();
 				} else {
 					if(notes[saveName] === undefined) {
 						text.value = "";
@@ -492,6 +495,7 @@ window.addEventListener("keydown", function(e) {
 					if(notes[deleteName] !== undefined) {
 						delete notes[deleteName];
 						storage.setItem("notes", JSON.stringify(notes));
+						if(currentSaveName === "notes") generateNotesPage();
 					}
 				}
 				e.preventDefault();
