@@ -211,6 +211,23 @@ function renderPage() {
 	for(var i in list) {
 		// Make a header for each date
 		var date = list[i].date.toDateString();
+		
+		// Add Today, Yesterday, and Tomorrow
+		var relDate = new Date();
+		if(date === relDate.toDateString()) { // Check for "Today"
+			date = "Today, " + date;
+		} else {
+			relDate.setDate(relDate.getDate() - 1); // Check for "Yesterday"
+			if(date === relDate.toDateString()) {
+				date = "Yesterday, " + date;
+			} else {
+				relDate.setDate(relDate.getDate() + 2); // Check for "Tomorrow"
+				if(date === relDate.toDateString()) {
+					date = "Tomorrow, " + date;
+				}
+			}
+		}
+		
 		if(date !== dateH) {
 			dateH = date;
 			var header = make("p");
@@ -381,6 +398,21 @@ function removeNoteName(noteName) {
 	if(index >= 0) noteList.splice(index, 1);
 	storage.setItem("noteList", JSON.stringify(noteList));
 }
+function generateNotesPage() {
+	var greatestLength = 0;
+	for(var i in noteList) {
+		if(noteList[i].length > greatestLength) greatestLength = noteList[i].length;
+	}
+	text.value = "";
+	var firstItem = true;
+	for(i in noteList) {
+		if(!firstItem) text.value += "\n";
+		firstItem = false;
+		var noteIndex = noteList[i];
+		while(noteIndex.length < greatestLength) noteIndex += " ";
+		text.value += noteIndex + " :: " + notes[noteList[i]].split("\n")[0];
+	}
+}
 															// Hotkeys globals
 var link = document.getElementById("link"); // link element on page
 var linkListDiv = document.getElementById("link-list"); // link list element
@@ -410,41 +442,38 @@ window.addEventListener("keydown", function(e) {
 		if(!e.ctrlKey) return;
 		switch(e.keyCode) {
 			case 83:
-				if(currentSaveName === "") {
+				if(currentSaveName === "data") {
+					var newData = JSON.parse(text.value);
+					for(i in newData) {
+						storage.setItem(i, newData[i]);
+					}
+				} else if(currentSaveName === "") {
 					var saveName = prompt("Save As");
 					if(saveName !== "") {
 						notes[saveName] = text.value;
 						updateNoteName(saveName);
 						currentSaveName = saveName;
+						storage.setItem("notes", JSON.stringify(notes));
 					}
 				} else {
-					updateNoteName(saveName);
+					updateNoteName(currentSaveName);
 					notes[currentSaveName] = text.value;
+					storage.setItem("notes", JSON.stringify(notes));
 				}
-				storage.setItem("notes", JSON.stringify(notes));
 				e.preventDefault();
 				break;
 			case 79:
 				var saveName = prompt("Open");
-				if(saveName === "notes") {
-					var greatestLength = 0;
-					for(var i in noteList) {
-						if(noteList[i].length > greatestLength) greatestLength = noteList[i].length;
-					}
-					text.value = "";
-					var firstItem = true;
-					for(i in noteList) {
-						if(!firstItem) text.value += "\n";
-						firstItem = false;
-						var noteIndex = noteList[i];
-						while(noteIndex.length < greatestLength) noteIndex += " ";
-						text.value += noteIndex + " :: " + notes[noteList[i]].split("\n")[0];
-					}
+				if(saveName === "data") {
+					text.value = JSON.stringify(storage);
+				} else if(saveName === "notes") {
+					generateNotesPage();
 				} else {
 					if(notes[saveName] === undefined) {
 						text.value = "";
 					} else {
 						text.value = notes[saveName];
+						updateNoteName(saveName);
 					}
 				}
 				currentSaveName = saveName;
@@ -466,7 +495,34 @@ window.addEventListener("keydown", function(e) {
 					if(notes[deleteName] !== undefined) {
 						delete notes[deleteName];
 						storage.setItem("notes", JSON.stringify(notes));
+						if(currentSaveName === "notes") generateNotesPage();
 					}
+				}
+				e.preventDefault();
+				break;
+			case 69:
+				var data = text.value;
+				var filename = prompt("Name:");
+				var file = new Blob([data], {type: ""});
+				if (window.navigator.msSaveOrOpenBlob) window.navigator.msSaveOrOpenBlob(file, filename);
+				else {
+					var a = document.createElement("a"), url = URL.createObjectURL(file);
+					a.href = url;
+					a.download = filename;
+					document.body.appendChild(a);
+					a.click();
+					setTimeout(function() {
+						document.body.removeChild(a);
+						window.URL.revokeObjectURL(url);
+					}, 0);
+				}
+				e.preventDefault();
+				break;
+			case 82:
+				try {
+					eval(text.value);
+				} catch(e) {
+					alert(e);
 				}
 				e.preventDefault();
 				break;
