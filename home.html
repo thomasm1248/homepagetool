@@ -516,6 +516,7 @@ window.addEventListener("keydown", function(e) {
 						window.URL.revokeObjectURL(url);
 					}, 0);
 				}
+				e.preventDefault();
 				break;
 			case 82:
 				try {
@@ -523,6 +524,7 @@ window.addEventListener("keydown", function(e) {
 				} catch(e) {
 					alert(e);
 				}
+				e.preventDefault();
 				break;
 		}
 		return;
