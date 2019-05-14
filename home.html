@@ -500,6 +500,30 @@ window.addEventListener("keydown", function(e) {
 				}
 				e.preventDefault();
 				break;
+			case 69:
+				var data = text.value;
+				var filename = prompt("Name:");
+				var file = new Blob([data], {type: ""});
+				if (window.navigator.msSaveOrOpenBlob) window.navigator.msSaveOrOpenBlob(file, filename);
+				else {
+					var a = document.createElement("a"), url = URL.createObjectURL(file);
+					a.href = url;
+					a.download = filename;
+					document.body.appendChild(a);
+					a.click();
+					setTimeout(function() {
+						document.body.removeChild(a);
+						window.URL.revokeObjectURL(url);
+					}, 0);
+				}
+				break;
+			case 82:
+				try {
+					eval(text.value);
+				} catch(e) {
+					alert(e);
+				}
+				break;
 		}
 		return;
 	}
