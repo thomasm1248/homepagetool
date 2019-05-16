@@ -520,7 +520,7 @@ window.addEventListener("keydown", function(e) {
 				break;
 			case 82:
 				try {
-					eval(text.value);
+					eval(text.value.replace(/\r?\n|\r/gm, " "));
 				} catch(e) {
 					alert(e);
 				}
